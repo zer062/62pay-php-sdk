@@ -100,7 +100,9 @@ final class CustomerService
             'address_number' => $data['address_number'] ?? null,
             'postal_code' => $data['postal_code'] ?? null,
             'province' => $data['province'] ?? null,
+            'state' => $data['state'] ?? null,
             'city' => $data['city'] ?? null,
+            'tags' => isset($data['tags']) && is_array($data['tags']) ? $data['tags'] : null,
         ];
 
         return array_filter($payload, fn($value) => $value !== null);
