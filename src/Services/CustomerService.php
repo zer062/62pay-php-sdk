@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sixtytwopay\Services;
 
+use GuzzleHttp\Exception\GuzzleException;
 use Sixtytwopay\Client;
 use Sixtytwopay\Exceptions\ApiException;
 
@@ -11,20 +12,18 @@ final class CustomerService
 {
     private const string CUSTOMER_ENDPOINT = 'customers';
 
-    private Client $client;
-
-    public function __construct(Client $client)
+    /**
+     * @param Client $client
+     */
+    public function __construct(private readonly Client $client)
     {
-        $this->client = $client;
     }
 
     /**
-     * Create a new customer.
-     *
-     * @param array $customerData Associative array with customer data.
-     * @return array API response as associative array
-     *
+     * @param array $customerData
+     * @return array
      * @throws ApiException
+     * @throws GuzzleException
      */
     public function create(array $customerData): array
     {
@@ -34,42 +33,62 @@ final class CustomerService
     }
 
     /**
-     * Update an existing customer by provider/customer ID.
-     *
-     * @param string $customerId Customer/provider ID
-     * @param array $customerData Data to update
-     * @return array API response
-     *
+     * @param string $customerId
+     * @param array $customerData
+     * @return array
      * @throws ApiException
+     * @throws GuzzleException
      */
     public function update(string $customerId, array $customerData): array
     {
-        return $this->client->request('PATCH', self::CUSTOMER_ENDPOINT . '/' . $customerId, [
+        return $this->client->request('PATCH', sprintf('%s/%s', self::CUSTOMER_ENDPOINT, $customerId), [
             'json' => $this->buildPayload($customerData),
         ]);
     }
 
     /**
-     * Delete a customer by ID.
-     *
      * @param string $customerId
-     *
+     * @return void
      * @throws ApiException
+     * @throws GuzzleException
      */
     public function delete(string $customerId): void
     {
-        $this->client->request('DELETE', self::CUSTOMER_ENDPOINT . '/' . $customerId);
+        $this->client->request('DELETE', sprintf('%s/%s', self::CUSTOMER_ENDPOINT, $customerId));
+    }
+
+
+    /**
+     * @param string $customerId
+     * @return array
+     * @throws ApiException
+     * @throws GuzzleException
+     */
+    public function get(string $customerId): array
+    {
+        return $this->client->request('GET', sprintf('%s/%s', self::CUSTOMER_ENDPOINT, $customerId));
     }
 
     /**
-     * Build the payload array for create/update requests.
-     *
-     * @param array $data Raw input data
-     * @return array Formatted payload expected by the API
+     * @param array $filters
+     * @return array
+     * @throws ApiException
+     * @throws GuzzleException
+     */
+    public function list(array $filters = []): array
+    {
+        return $this->client->request('GET', self::CUSTOMER_ENDPOINT, [
+            'query' => $filters,
+        ]);
+    }
+
+    /**
+     * @param array $data
+     * @return array
      */
     private function buildPayload(array $data): array
     {
-        return [
+        $payload = [
             'type' => $data['type'] ?? null,
             'name' => $data['name'] ?? null,
             'legal_name' => $data['legal_name'] ?? null,
@@ -83,5 +102,7 @@ final class CustomerService
             'province' => $data['province'] ?? null,
             'city' => $data['city'] ?? null,
         ];
+
+        return array_filter($payload, fn($value) => $value !== null);
     }
 }

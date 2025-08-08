@@ -18,50 +18,88 @@ class ApiException extends Exception
     protected const int CODE_CONNECTION = 6001;
     protected const int CODE_UNEXPECTED = 7001;
 
+    /**
+     * @param array|null $details
+     * @param Exception|null $previous
+     * @return self
+     */
     public static function badRequest(?array $details = null, ?Exception $previous = null): self
     {
         $message = self::extractMessage($details) ?? 'Bad request.';
         return new self($message, self::CODE_BAD_REQUEST, $previous);
     }
 
+    /**
+     * @param Exception|null $previous
+     * @return self
+     */
     public static function unauthorized(?Exception $previous = null): self
     {
         return new self('Unauthorized.', self::CODE_UNAUTHORIZED, $previous);
     }
 
+    /**
+     * @param Exception|null $previous
+     * @return self
+     */
     public static function forbidden(?Exception $previous = null): self
     {
         return new self('Forbidden.', self::CODE_FORBIDDEN, $previous);
     }
 
+    /**
+     * @param Exception|null $previous
+     * @return self
+     */
     public static function notFound(?Exception $previous = null): self
     {
         return new self('Resource not found.', self::CODE_NOT_FOUND, $previous);
     }
 
+    /**
+     * @param Exception|null $previous
+     * @return self
+     */
     public static function conflict(?Exception $previous = null): self
     {
         return new self('Data conflict.', self::CODE_CONFLICT, $previous);
     }
 
+    /**
+     * @param int $statusCode
+     * @param array|null $body
+     * @param Exception|null $previous
+     * @return self
+     */
     public static function serverError(int $statusCode, ?array $body = null, ?Exception $previous = null): self
     {
         $message = self::extractMessage($body) ?? 'Server error.';
         return new self($message, self::CODE_SERVER_ERROR, $previous);
     }
 
+    /**
+     * @param ConnectException|null $previous
+     * @return self
+     */
     public static function connection(?ConnectException $previous = null): self
     {
         return new self('Connection error: unable to reach external service.', self::CODE_CONNECTION, $previous);
     }
 
+    /**
+     * @param Exception|null $previous
+     * @return self
+     */
     public static function unexpected(?Exception $previous = null): self
     {
         return new self('Unexpected error communicating with external service.', self::CODE_UNEXPECTED, $previous);
     }
 
     /**
-     * Factory to create ApiException from HTTP response
+     * @param int $statusCode
+     * @param array|null $body
+     * @param Exception|null $previous
+     * @return self
      */
     public static function fromHttpResponse(int $statusCode, ?array $body = null, ?Exception $previous = null): self
     {
@@ -75,6 +113,10 @@ class ApiException extends Exception
         };
     }
 
+    /**
+     * @param array|null $payload
+     * @return string|null
+     */
     private static function extractMessage(?array $payload): ?string
     {
         if (!$payload) {

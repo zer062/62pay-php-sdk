@@ -2,15 +2,13 @@
 
 require __DIR__ . '/vendor/autoload.php';
 
-use Sixtytwopay\Client;
-use Sixtytwopay\Exceptions\ApiException;
-use Sixtytwopay\Services\CustomerService;
+use GuzzleHttp\Exception\GuzzleException;
+use Sixtytwopay\Sixtytwopay;
 
 $apiKey = 'bf5c68892f1e60e87005e7d7c3cabfb81bcd9f9cd8e04b20fa4f56f12bc626e8';
-$environment = 'sandbox';
+$environment = 'SANDBOX';
 
-$client = new Client($apiKey, $environment);
-$customerService = new CustomerService($client);
+$gateway = new Sixtytwopay($apiKey, $environment);
 
 try {
     $newCustomer = [
@@ -28,12 +26,12 @@ try {
         'legal_name' => 'Test User Ltd',
     ];
 
-    $response = $customerService->create($newCustomer);
+    $response = $gateway->customer()->create($newCustomer);
 
     echo "Customer created successfully";
 
-} catch (ApiException $e) {
-    echo "API Exception: " . $e->getMessage() . "\n";
-} catch (\Exception $e) {
-    echo "General Exception: " . $e->getMessage() . "\n";
+} catch (Exception $e) {
+    echo $e->getMessage();
+} catch (GuzzleException $e) {
+    echo $e->getMessage();
 }
