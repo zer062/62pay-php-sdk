@@ -20,52 +20,52 @@ final class InvoiceService
     }
 
     /**
-     * @param array $invoiceData
+     * @param array $data
      * @return array
      * @throws ApiException
      * @throws GuzzleException
      */
-    public function create(array $invoiceData): array
+    public function create(array $data): array
     {
         return $this->client->request('POST', self::INVOICES_ENDPOINT, [
-            'json' => $this->buildCreatePayload($invoiceData),
+            'json' => $this->buildCreatePayload($data),
         ]);
     }
 
     /**
-     * @param string $invoiceId
-     * @param array $invoiceData
+     * @param string $invoice
+     * @param array $data
      * @return array
      * @throws ApiException
      * @throws GuzzleException
      */
-    public function update(string $invoiceId, array $invoiceData): array
+    public function update(string $invoice, array $data): array
     {
-        return $this->client->request('PATCH', sprintf('%s/%s', self::INVOICES_ENDPOINT, $invoiceId), [
-            'json' => $this->buildUpdatePayload($invoiceData),
+        return $this->client->request('PUT', sprintf('%s/%s', self::INVOICES_ENDPOINT, $invoice), [
+            'json' => $this->buildUpdatePayload($data),
         ]);
     }
 
     /**
-     * @param string $invoiceId
+     * @param string $invoice
      * @return void
      * @throws ApiException
      * @throws GuzzleException
      */
-    public function delete(string $invoiceId): void
+    public function delete(string $invoice): void
     {
-        $this->client->request('DELETE', sprintf('%s/%s', self::INVOICES_ENDPOINT, $invoiceId));
+        $this->client->request('DELETE', sprintf('%s/%s', self::INVOICES_ENDPOINT, $invoice));
     }
 
     /**
-     * @param string $invoiceId
+     * @param string $invoice
      * @return array
      * @throws ApiException
      * @throws GuzzleException
      */
-    public function get(string $invoiceId): array
+    public function get(string $invoice): array
     {
-        return $this->client->request('GET', sprintf('%s/%s', self::INVOICES_ENDPOINT, $invoiceId));
+        return $this->client->request('GET', sprintf('%s/%s', self::INVOICES_ENDPOINT, $invoice));
     }
 
     /**
@@ -82,14 +82,14 @@ final class InvoiceService
     }
 
     /**
-     * @param string $invoiceId
+     * @param string $invoice
      * @return void
      * @throws ApiException
      * @throws GuzzleException
      */
-    public function refund(string $invoiceId): void
+    public function refund(string $invoice): void
     {
-        $this->client->request('POST', sprintf('%s/%s/refund', self::INVOICES_ENDPOINT, $invoiceId));
+        $this->client->request('POST', sprintf('%s/%s/refund', self::INVOICES_ENDPOINT, $invoice));
     }
 
     /**
