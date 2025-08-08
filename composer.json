@@ -3,7 +3,6 @@
   "description": "PHP SDK for the 62pay Payment Gateway",
   "type": "library",
   "license": "MIT",
-  "version": "1.0.0",
   "keywords": [
     "62pay",
     "payment",
@@ -28,7 +27,8 @@
   "authors": [
     {
       "name": "peagah",
-      "email": "peagahvieira2003@gmail.com"
+      "email": "peagahvieira2003@gmail.com",
+      "role": "Developer"
     }
   ],
   "require": {
@@ -38,5 +38,6 @@
   "config": {
     "sort-packages": true
   },
-  "minimum-stability": "stable"
+  "minimum-stability": "stable",
+  "prefer-stable": true
 }
