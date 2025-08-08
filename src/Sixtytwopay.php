@@ -6,6 +6,7 @@ namespace Sixtytwopay;
 
 use Sixtytwopay\Services\CustomerService;
 use Sixtytwopay\Services\InvoiceService;
+use Sixtytwopay\Services\PaymentService;
 
 final class Sixtytwopay
 {
@@ -40,6 +41,14 @@ final class Sixtytwopay
     public function invoice(): InvoiceService
     {
         return new InvoiceService($this->client);
+    }
+
+    /**
+     * @return PaymentService
+     */
+    public function payment(): PaymentService
+    {
+        return new PaymentService($this->client);
     }
 
     /**
