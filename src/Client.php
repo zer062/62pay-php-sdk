@@ -8,6 +8,7 @@ use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
+use Psr\Http\Message\ResponseInterface;
 use Sixtytwopay\Exceptions\ApiException;
 
 final class Client
@@ -21,8 +22,8 @@ final class Client
 
     /**
      * @param string $apiKey
-     * @param string $environment 'SANDBOX' or 'PRODUCTION'
-     * @param array $guzzleOptions Additional Guzzle client options
+     * @param string $environment
+     * @param array $guzzleOptions
      */
     public function __construct(string $apiKey, string $environment = 'SANDBOX', array $guzzleOptions = [])
     {
@@ -56,34 +57,65 @@ final class Client
     {
         try {
             $response = $this->http->request($method, $uri, $options);
-
-            $statusCode = $response->getStatusCode();
-            if ($statusCode < 200 || $statusCode >= 300) {
-                $body = (string) $response->getBody();
-                $jsonBody = json_decode($body, true);
-                throw ApiException::fromHttpResponse($statusCode, $jsonBody);
-            }
-
-            $body = (string) $response->getBody();
-            $decoded = json_decode($body, true);
-
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new ApiException('Invalid JSON response: ' . json_last_error_msg());
-            }
-
-            return $decoded ?? [];
+            return $this->handleResponse($response);
         } catch (ConnectException $e) {
             throw ApiException::connection($e);
         } catch (RequestException $e) {
-            $response = $e->getResponse();
-            if ($response) {
-                $statusCode = $response->getStatusCode();
-                $body = (string) $response->getBody();
-                $jsonBody = json_decode($body, true);
-                throw ApiException::fromHttpResponse($statusCode, $jsonBody, $e);
-            }
-            throw ApiException::unexpected($e);
+            $this->handleRequestException($e);
         }
+    }
+
+    /**
+     * @param ResponseInterface $response
+     * @return array
+     * @throws ApiException
+     */
+    private function handleResponse(ResponseInterface $response): array
+    {
+        $statusCode = $response->getStatusCode();
+
+        $body = (string)$response->getBody();
+        $decoded = $this->decodeJson($body);
+
+        if ($statusCode < 200 || $statusCode >= 300) {
+            throw ApiException::fromHttpResponse($statusCode, $decoded);
+        }
+
+        return $decoded;
+    }
+
+    /**
+     * @param string $json
+     * @return array
+     * @throws ApiException
+     */
+    private function decodeJson(string $json): array
+    {
+        $decoded = json_decode($json, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new ApiException('Invalid JSON response: ' . json_last_error_msg());
+        }
+
+        return $decoded ?? [];
+    }
+
+    /**
+     * @param RequestException $e
+     * @return void
+     * @throws ApiException
+     */
+    private function handleRequestException(RequestException $e): void
+    {
+        $response = $e->getResponse();
+        if ($response) {
+            $statusCode = $response->getStatusCode();
+            $body = (string)$response->getBody();
+            $jsonBody = $this->decodeJson($body);
+            throw ApiException::fromHttpResponse($statusCode, $jsonBody, $e);
+        }
+
+        throw ApiException::unexpected($e);
     }
 
     /**
@@ -91,7 +123,6 @@ final class Client
      * @param array $options
      * @return array
      * @throws ApiException
-     * @throws GuzzleException
      */
     public function get(string $uri, array $options = []): array
     {
@@ -103,7 +134,6 @@ final class Client
      * @param array $options
      * @return array
      * @throws ApiException
-     * @throws GuzzleException
      */
     public function post(string $uri, array $options = []): array
     {
