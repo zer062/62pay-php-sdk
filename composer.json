@@ -1,5 +1,5 @@
 {
-  "name": "sixtytwopay/php-sdk",
+  "name": "62pay/php-sdk",
   "description": "PHP SDK for the 62pay Payment Gateway",
   "type": "library",
   "license": "MIT",
