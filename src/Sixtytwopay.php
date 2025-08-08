@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sixtytwopay;
 
+use Sixtytwopay\Services\CheckoutService;
 use Sixtytwopay\Services\CustomerService;
 use Sixtytwopay\Services\InvoiceService;
 use Sixtytwopay\Services\PaymentService;
@@ -49,6 +50,14 @@ final class Sixtytwopay
     public function payment(): PaymentService
     {
         return new PaymentService($this->client);
+    }
+
+    /**
+     * @return CheckoutService
+     */
+    public function checkout(): CheckoutService
+    {
+        return new CheckoutService($this->client);
     }
 
     /**

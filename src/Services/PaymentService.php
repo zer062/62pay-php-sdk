@@ -10,7 +10,7 @@ use Sixtytwopay\Exceptions\ApiException;
 
 final class PaymentService
 {
-    private const INVOICES_ENDPOINT = 'payments';
+    private const PAYMENTS_ENDPOINT = 'payments';
 
     /**
      * @param Client $client
@@ -28,7 +28,7 @@ final class PaymentService
      */
     public function update(string $invoice, array $data): array
     {
-        return $this->client->request('PATCH', sprintf('%s/%s', self::INVOICES_ENDPOINT, $invoice), [
+        return $this->client->request('PATCH', sprintf('%s/%s', self::PAYMENTS_ENDPOINT, $invoice), [
             'json' => $this->buildUpdatePayload($data),
         ]);
     }
@@ -41,7 +41,7 @@ final class PaymentService
      */
     public function get(string $invoice): array
     {
-        return $this->client->request('GET', sprintf('%s/%s', self::INVOICES_ENDPOINT, $invoice));
+        return $this->client->request('GET', sprintf('%s/%s', self::PAYMENTS_ENDPOINT, $invoice));
     }
 
     /**
@@ -53,7 +53,7 @@ final class PaymentService
      */
     public function refund(string $invoice, array $data): void
     {
-        $this->client->request('POST', sprintf('%s/%s', self::INVOICES_ENDPOINT, $invoice), [
+        $this->client->request('POST', sprintf('%s/%s/refund', self::PAYMENTS_ENDPOINT, $invoice), [
             'json' => $this->buildRefundPayload($data),
         ]);
     }
