@@ -9,14 +9,14 @@ use GuzzleHttp\Exception\ConnectException;
 
 class ApiException extends Exception
 {
-    protected const int CODE_BAD_REQUEST = 4001;
-    protected const int CODE_UNAUTHORIZED = 4002;
-    protected const int CODE_FORBIDDEN = 4003;
-    protected const int CODE_NOT_FOUND = 4004;
-    protected const int CODE_CONFLICT = 4005;
-    protected const int CODE_SERVER_ERROR = 5001;
-    protected const int CODE_CONNECTION = 6001;
-    protected const int CODE_UNEXPECTED = 7001;
+    protected const CODE_BAD_REQUEST = 4001;
+    protected const CODE_UNAUTHORIZED = 4002;
+    protected const CODE_FORBIDDEN = 4003;
+    protected const CODE_NOT_FOUND = 4004;
+    protected const CODE_CONFLICT = 4005;
+    protected const CODE_SERVER_ERROR = 5001;
+    protected const CODE_CONNECTION = 6001;
+    protected const CODE_UNEXPECTED = 7001;
 
     /**
      * @param array|null $details

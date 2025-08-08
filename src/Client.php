@@ -13,11 +13,11 @@ use Sixtytwopay\Exceptions\ApiException;
 
 final class Client
 {
-    private const string SANDBOX_URL = 'https://sandbox.62pay.com.br/api/v1/';
-    private const string PRODUCTION_URL = 'https://62pay.com.br/api/v1/';
+    private const SANDBOX_URL = 'https://sandbox.62pay.com.br/api/v1/';
+    private const PRODUCTION_URL = 'https://62pay.com.br/api/v1/';
 
-    private readonly string $apiKey;
-    private readonly string $environment;
+    private string $apiKey;
+    private string $environment;
     private GuzzleClient $http;
 
     /**
@@ -123,6 +123,7 @@ final class Client
      * @param array $options
      * @return array
      * @throws ApiException
+     * @throws GuzzleException
      */
     public function get(string $uri, array $options = []): array
     {
@@ -134,6 +135,7 @@ final class Client
      * @param array $options
      * @return array
      * @throws ApiException
+     * @throws GuzzleException
      */
     public function post(string $uri, array $options = []): array
     {

@@ -10,12 +10,12 @@ use Sixtytwopay\Exceptions\ApiException;
 
 final class CustomerService
 {
-    private const string CUSTOMER_ENDPOINT = 'customers';
+    private const CUSTOMER_ENDPOINT = 'customers';
 
     /**
      * @param Client $client
      */
-    public function __construct(private readonly Client $client)
+    public function __construct(private Client $client)
     {
     }
 
@@ -33,40 +33,40 @@ final class CustomerService
     }
 
     /**
-     * @param string $customerId
+     * @param string $customer
      * @param array $customerData
      * @return array
      * @throws ApiException
      * @throws GuzzleException
      */
-    public function update(string $customerId, array $customerData): array
+    public function update(string $customer, array $customerData): array
     {
-        return $this->client->request('PATCH', sprintf('%s/%s', self::CUSTOMER_ENDPOINT, $customerId), [
+        return $this->client->request('PATCH', sprintf('%s/%s', self::CUSTOMER_ENDPOINT, $customer), [
             'json' => $this->buildPayload($customerData),
         ]);
     }
 
     /**
-     * @param string $customerId
+     * @param string $customer
      * @return void
      * @throws ApiException
      * @throws GuzzleException
      */
-    public function delete(string $customerId): void
+    public function delete(string $customer): void
     {
-        $this->client->request('DELETE', sprintf('%s/%s', self::CUSTOMER_ENDPOINT, $customerId));
+        $this->client->request('DELETE', sprintf('%s/%s', self::CUSTOMER_ENDPOINT, $customer));
     }
 
 
     /**
-     * @param string $customerId
+     * @param string $customer
      * @return array
      * @throws ApiException
      * @throws GuzzleException
      */
-    public function get(string $customerId): array
+    public function get(string $customer): array
     {
-        return $this->client->request('GET', sprintf('%s/%s', self::CUSTOMER_ENDPOINT, $customerId));
+        return $this->client->request('GET', sprintf('%s/%s', self::CUSTOMER_ENDPOINT, $customer));
     }
 
     /**

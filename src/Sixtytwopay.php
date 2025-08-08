@@ -10,8 +10,8 @@ final class Sixtytwopay
 {
     protected Client $client;
 
-    private const array ALLOWED_ENVIRONMENTS = ['SANDBOX', 'PRODUCTION'];
-    private const string DEFAULT_ENVIRONMENT = 'SANDBOX';
+    private const ALLOWED_ENVIRONMENTS = ['SANDBOX', 'PRODUCTION'];
+    private const DEFAULT_ENVIRONMENT = 'SANDBOX';
 
     /**
      * @param string $apiKey
@@ -73,6 +73,11 @@ final class Sixtytwopay
      */
     private function findClosestEnvironment(string $environment): ?string
     {
-        return array_find(self::ALLOWED_ENVIRONMENTS, fn($env) => stripos($env, $environment) !== false || stripos($environment, $env) !== false);
+        foreach (self::ALLOWED_ENVIRONMENTS as $env) {
+            if (stripos($env, $environment) !== false || stripos($environment, $env) !== false) {
+                return $env;
+            }
+        }
+        return null;
     }
 }

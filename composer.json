@@ -1,21 +1,42 @@
 {
-  "name": "sixtytwopay/php-sdk",
+  "name": "62pay/php-sdk",
   "description": "PHP SDK for the 62pay Payment Gateway",
   "type": "library",
   "license": "MIT",
+  "version": "1.0.0",
+  "keywords": [
+    "62pay",
+    "payment",
+    "gateway",
+    "sdk",
+    "php"
+  ],
+  "homepage": "https://62pay.com.br/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zer062/62pay-php-sdk"
+  },
+  "support": {
+    "issues": "https://github.com/zer062/62pay-php-sdk/issues",
+    "docs": "https://62pay.readme.io/"
+  },
   "autoload": {
-        "psr-4": {
-            "Sixtytwopay\\": "src/"
-        }
-    },
-    "authors": [
-        {
-            "name": "peagah",
-            "email": "peagahvieira2003@gmail.com"
-        }
-    ],
+    "psr-4": {
+      "Sixtytwopay\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "peagah",
+      "email": "peagahvieira2003@gmail.com"
+    }
+  ],
   "require": {
-    "php": "^8.4",
+    "php": "^8.0",
     "guzzlehttp/guzzle": "^7.9"
-  }
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "minimum-stability": "stable"
 }
