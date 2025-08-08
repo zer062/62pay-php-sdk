@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Sixtytwopay;
 
 use Sixtytwopay\Services\CustomerService;
+use Sixtytwopay\Services\InvoiceService;
 
 final class Sixtytwopay
 {
@@ -31,6 +32,14 @@ final class Sixtytwopay
     public function customer(): CustomerService
     {
         return new CustomerService($this->client);
+    }
+
+    /**
+     * @return InvoiceService
+     */
+    public function invoice(): InvoiceService
+    {
+        return new InvoiceService($this->client);
     }
 
     /**
