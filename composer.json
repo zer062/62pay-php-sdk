@@ -1,0 +1,21 @@
+{
+  "name": "sixtytwopay/php-sdk",
+  "description": "PHP SDK for the 62pay Payment Gateway",
+  "type": "library",
+  "license": "MIT",
+  "autoload": {
+        "psr-4": {
+            "Zero62\\SixtwopayPhpSdk\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "peagah",
+            "email": "peagahvieira2003@gmail.com"
+        }
+    ],
+  "require": {
+    "php": "^8.4",
+    "guzzlehttp/guzzle": "^7.9"
+  }
+}
