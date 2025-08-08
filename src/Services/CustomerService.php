@@ -20,29 +20,29 @@ final class CustomerService
     }
 
     /**
-     * @param array $customerData
+     * @param array $data
      * @return array
      * @throws ApiException
      * @throws GuzzleException
      */
-    public function create(array $customerData): array
+    public function create(array $data): array
     {
         return $this->client->request('POST', self::CUSTOMER_ENDPOINT, [
-            'json' => $this->buildPayload($customerData),
+            'json' => $this->buildPayload($data),
         ]);
     }
 
     /**
      * @param string $customer
-     * @param array $customerData
+     * @param array $data
      * @return array
      * @throws ApiException
      * @throws GuzzleException
      */
-    public function update(string $customer, array $customerData): array
+    public function update(string $customer, array $data): array
     {
         return $this->client->request('PATCH', sprintf('%s/%s', self::CUSTOMER_ENDPOINT, $customer), [
-            'json' => $this->buildPayload($customerData),
+            'json' => $this->buildPayload($data),
         ]);
     }
 
