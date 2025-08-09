@@ -7,6 +7,9 @@ namespace Sixtytwopay\Services;
 use GuzzleHttp\Exception\GuzzleException;
 use Sixtytwopay\Client;
 use Sixtytwopay\Exceptions\ApiException;
+use Sixtytwopay\Inputs\Customer\CustomerCreateInput;
+use Sixtytwopay\Inputs\Customer\CustomerUpdateInput;
+use Sixtytwopay\Responses\CustomerResponse;
 
 final class CustomerService
 {
@@ -20,30 +23,34 @@ final class CustomerService
     }
 
     /**
-     * @param array $data
-     * @return array
+     * @param CustomerCreateInput $input
+     * @return CustomerResponse
      * @throws ApiException
      * @throws GuzzleException
      */
-    public function create(array $data): array
+    public function create(CustomerCreateInput $input): CustomerResponse
     {
-        return $this->client->request('POST', self::CUSTOMER_ENDPOINT, [
-            'json' => $this->buildPayload($data),
+        $raw = $this->client->request('POST', self::CUSTOMER_ENDPOINT, [
+            'json' => $input->toPayload(),
         ]);
+
+        return CustomerResponse::fromArray($raw);
     }
 
     /**
      * @param string $customer
-     * @param array $data
-     * @return array
+     * @param CustomerUpdateInput $input
+     * @return CustomerResponse
      * @throws ApiException
      * @throws GuzzleException
      */
-    public function update(string $customer, array $data): array
+    public function update(string $customer, CustomerUpdateInput $input): CustomerResponse
     {
-        return $this->client->request('PATCH', sprintf('%s/%s', self::CUSTOMER_ENDPOINT, $customer), [
-            'json' => $this->buildPayload($data),
+        $raw = $this->client->request('PATCH', sprintf('%s/%s', self::CUSTOMER_ENDPOINT, $customer), [
+            'json' => $input->toPayload(),
         ]);
+
+        return CustomerResponse::fromArray($raw);
     }
 
     /**
@@ -57,16 +64,16 @@ final class CustomerService
         $this->client->request('DELETE', sprintf('%s/%s', self::CUSTOMER_ENDPOINT, $customer));
     }
 
-
     /**
      * @param string $customer
-     * @return array
+     * @return CustomerResponse
      * @throws ApiException
      * @throws GuzzleException
      */
-    public function get(string $customer): array
+    public function get(string $customer): CustomerResponse
     {
-        return $this->client->request('GET', sprintf('%s/%s', self::CUSTOMER_ENDPOINT, $customer));
+        $raw = $this->client->request('GET', sprintf('%s/%s', self::CUSTOMER_ENDPOINT, $customer));
+        return CustomerResponse::fromArray($raw);
     }
 
     /**
@@ -80,31 +87,5 @@ final class CustomerService
         return $this->client->request('GET', self::CUSTOMER_ENDPOINT, [
             'query' => $filters,
         ]);
-    }
-
-    /**
-     * @param array $data
-     * @return array
-     */
-    private function buildPayload(array $data): array
-    {
-        $payload = [
-            'type' => $data['type'] ?? null,
-            'name' => $data['name'] ?? null,
-            'legal_name' => $data['legal_name'] ?? null,
-            'email' => $data['email'] ?? null,
-            'phone' => $data['phone'] ?? null,
-            'document_number' => $data['document_number'] ?? null,
-            'address' => $data['address'] ?? null,
-            'complement' => $data['complement'] ?? null,
-            'address_number' => $data['address_number'] ?? null,
-            'postal_code' => $data['postal_code'] ?? null,
-            'province' => $data['province'] ?? null,
-            'state' => $data['state'] ?? null,
-            'city' => $data['city'] ?? null,
-            'tags' => isset($data['tags']) && is_array($data['tags']) ? $data['tags'] : null,
-        ];
-
-        return array_filter($payload, fn($value) => $value !== null);
     }
 }
