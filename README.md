@@ -62,7 +62,6 @@ $sdk = new Sixtytwopay('SIXTYTWOPAY_API_KEY', 'SANDBOX');
 ```php
 $customer = $sdk->customer()->create([
 'name' => 'João da Silva',
-'document_number' => '12345678900',
 ]);
 ```
 
