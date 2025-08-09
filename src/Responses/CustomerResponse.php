@@ -23,23 +23,143 @@ final class CustomerResponse
      * @param array|null $tags
      */
     private function __construct(
-        public string  $id,
-        public string  $type,
-        public string  $name,
-        public ?string $legalName,
-        public ?string $email,
-        public ?string $phone,
-        public ?string $documentNumber,
-        public ?string $address,
-        public ?string $complement,
-        public ?string $addressNumber,
-        public ?string $postalCode,
-        public ?string $province,
-        public ?string $state,
-        public ?string $city,
-        public ?array  $tags,
+        private string  $id,
+        private string  $type,
+        private string  $name,
+        private ?string $legalName,
+        private ?string $email,
+        private ?string $phone,
+        private ?string $documentNumber,
+        private ?string $address,
+        private ?string $complement,
+        private ?string $addressNumber,
+        private ?string $postalCode,
+        private ?string $province,
+        private ?string $state,
+        private ?string $city,
+        private ?array  $tags,
     )
     {
+    }
+
+    /**
+     * @return string
+     */
+    public function id(): string
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return string
+     */
+    public function type(): string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @return string
+     */
+    public function name(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function legalName(): ?string
+    {
+        return $this->legalName;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function email(): ?string
+    {
+        return $this->email;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function phone(): ?string
+    {
+        return $this->phone;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function documentNumber(): ?string
+    {
+        return $this->documentNumber;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function address(): ?string
+    {
+        return $this->address;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function complement(): ?string
+    {
+        return $this->complement;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function addressNumber(): ?string
+    {
+        return $this->addressNumber;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function postalCode(): ?string
+    {
+        return $this->postalCode;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function province(): ?string
+    {
+        return $this->province;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function state(): ?string
+    {
+        return $this->state;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function city(): ?string
+    {
+        return $this->city;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function tags(): ?array
+    {
+        return $this->tags;
     }
 
     /**
