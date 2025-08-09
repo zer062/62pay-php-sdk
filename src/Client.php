@@ -38,6 +38,7 @@ final class Client
                 'Authorization' => "Bearer {$apiKey}",
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
+                'User-Agent' => sprintf('62pay-php-sdk PHP/%s', PHP_VERSION),
             ],
             'timeout' => 10,
         ];
