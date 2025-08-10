@@ -100,49 +100,4 @@ final class InvoiceService
     {
         $this->client->request('POST', sprintf('%s/%s/refund', self::INVOICES_ENDPOINT, $invoice));
     }
-
-    /**
-     * @param array $data
-     * @return array
-     */
-    private function buildCreatePayload(array $data): array
-    {
-        $payload = [
-            'customer' => $data['customer'] ?? null,
-            'payment_method' => $data['payment_method'] ?? null,
-            'amount' => $data['amount'] ?? null,
-            'due_date' => $data['due_date'] ?? null,
-            'description' => $data['description'] ?? null,
-            'installments' => $data['installments'] ?? null,
-            'immutable' => $data['immutable'] ?? null,
-            'interest_percent' => $data['interest_percent'] ?? null,
-            'fine_type' => $data['fine_type'] ?? null,
-            'fine_value' => $data['fine_value'] ?? null,
-            'discount_type' => $data['discount_type'] ?? null,
-            'discount_value' => $data['discount_value'] ?? null,
-            'discount_deadline' => $data['discount_deadline'] ?? null,
-            'tags' => isset($data['tags']) && is_array($data['tags']) ? $data['tags'] : null,
-        ];
-
-        return array_filter($payload, fn($value) => $value !== null);
-    }
-
-    /**
-     * @param array $data
-     * @return array
-     */
-    private function buildUpdatePayload(array $data): array
-    {
-        $payload = [
-            'payment_method' => $data['payment_method'] ?? null,
-            'amount' => $data['amount'] ?? null,
-            'due_date' => $data['due_date'] ?? null,
-            'description' => $data['description'] ?? null,
-            'installments' => $data['installments'] ?? null,
-            'immutable' => $data['immutable'] ?? null,
-            'tags' => isset($data['tags']) && is_array($data['tags']) ? $data['tags'] : null,
-        ];
-
-        return array_filter($payload, fn($value) => $value !== null);
-    }
 }
