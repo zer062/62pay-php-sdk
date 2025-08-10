@@ -163,20 +163,28 @@ final class InvoiceResponse
     }
 
     /**
-     * @param array $data
+     * @param array $response
      * @return self
      */
-    public static function fromArray(array $data): self
+    public static function fromArray(array $response): self
     {
-        $payments = array_map(
-            static fn(array $p) => PaymentResponse::fromArray($p),
-            is_iterable($data['payments'] ?? null) ? $data['payments'] : []
-        );
+        $data = $response['data'] ?? $response;
+
+        $payments = [];
+
+        if (isset($data['payments']) && is_array($data['payments'])) {
+            $payments = array_map(
+                static fn(array $p) => PaymentResponse::fromArray($p),
+                $data['payments']
+            );
+        }
 
         $tags = null;
-
-        if (!empty($data['tags']) && is_iterable($data['tags'])) {
-            $tags = array_map(static fn(array $t) => TagResponse::fromArray($t), $data['tags']);
+        if (isset($data['tags']) && is_array($data['tags'])) {
+            $tags = array_map(
+                static fn(array $t) => TagResponse::fromArray($t),
+                $data['tags']
+            );
         }
 
         return new self(
