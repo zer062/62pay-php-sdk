@@ -7,6 +7,9 @@ namespace Sixtytwopay\Services;
 use GuzzleHttp\Exception\GuzzleException;
 use Sixtytwopay\Client;
 use Sixtytwopay\Exceptions\ApiException;
+use Sixtytwopay\Inputs\Invoice\InvoiceCreateInput;
+use Sixtytwopay\Inputs\Invoice\InvoiceUpdateInput;
+use Sixtytwopay\Responses\InvoiceResponse;
 
 final class InvoiceService
 {
@@ -20,30 +23,34 @@ final class InvoiceService
     }
 
     /**
-     * @param array $data
-     * @return array
+     * @param InvoiceCreateInput $input
+     * @return InvoiceResponse
      * @throws ApiException
      * @throws GuzzleException
      */
-    public function create(array $data): array
+    public function create(InvoiceCreateInput $input): InvoiceResponse
     {
-        return $this->client->request('POST', self::INVOICES_ENDPOINT, [
-            'json' => $this->buildCreatePayload($data),
+        $raw = $this->client->request('POST', self::INVOICES_ENDPOINT, [
+            'json' => $input->toPayload(),
         ]);
+
+        return InvoiceResponse::fromArray($raw);
     }
 
     /**
      * @param string $invoice
-     * @param array $data
-     * @return array
+     * @param InvoiceUpdateInput $input
+     * @return InvoiceResponse
      * @throws ApiException
      * @throws GuzzleException
      */
-    public function update(string $invoice, array $data): array
+    public function update(string $invoice, InvoiceUpdateInput $input): InvoiceResponse
     {
-        return $this->client->request('PUT', sprintf('%s/%s', self::INVOICES_ENDPOINT, $invoice), [
-            'json' => $this->buildUpdatePayload($data),
+        $raw = $this->client->request('PUT', sprintf('%s/%s', self::INVOICES_ENDPOINT, $invoice), [
+            'json' => $input->toPayload(),
         ]);
+
+        return InvoiceResponse::fromArray($raw);
     }
 
     /**
@@ -59,13 +66,15 @@ final class InvoiceService
 
     /**
      * @param string $invoice
-     * @return array
+     * @return InvoiceResponse
      * @throws ApiException
      * @throws GuzzleException
      */
-    public function get(string $invoice): array
+    public function get(string $invoice): InvoiceResponse
     {
-        return $this->client->request('GET', sprintf('%s/%s', self::INVOICES_ENDPOINT, $invoice));
+        $raw = $this->client->request('GET', sprintf('%s/%s', self::INVOICES_ENDPOINT, $invoice));
+
+        return InvoiceResponse::fromArray($raw);
     }
 
     /**
