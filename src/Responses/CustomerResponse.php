@@ -163,11 +163,18 @@ final class CustomerResponse
     }
 
     /**
-     * @param array $data
+     * @param array $response
      * @return self
      */
-    public static function fromArray(array $data): self
+    public static function fromArray(array $response): self
     {
+        $data = $response['data'] ?? $response;
+
+        $address = $data['address'] ?? [];
+        if (!is_array($address)) {
+            $address = [];
+        }
+
         return new self(
             id: $data['id'],
             type: $data['type'],
@@ -176,14 +183,14 @@ final class CustomerResponse
             email: $data['email'] ?? null,
             phone: $data['phone'] ?? null,
             documentNumber: $data['document_number'] ?? null,
-            address: $data['address'] ?? null,
-            complement: $data['complement'] ?? null,
-            addressNumber: $data['address_number'] ?? null,
-            postalCode: $data['postal_code'] ?? null,
-            province: $data['province'] ?? null,
-            state: $data['state'] ?? null,
-            city: $data['city'] ?? null,
-            tags: isset($a['tags']) && is_array($a['tags']) ? array_values($a['tags']) : null,
+            address: $address['address'] ?? null,
+            complement: $address['complement'] ?? null,
+            addressNumber: $address['address_number'] ?? null,
+            postalCode: $address['postal_code'] ?? null,
+            province: $address['province'] ?? null,
+            state: $address['state'] ?? null,
+            city: $address['city'] ?? null,
+            tags: isset($data['tags']) && is_array($data['tags']) ? array_values($data['tags']) : null
         );
     }
 }

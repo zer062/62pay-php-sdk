@@ -223,13 +223,14 @@ final class PaymentResponse
     }
 
     /**
-     * @param array $data
+     * @param array $response
      * @return self
      */
-    public static function fromArray(array $data): self
+    public static function fromArray(array $response): self
     {
-        $payable = null;
+        $data = $response['data'] ?? $response;
 
+        $payable = null;
         if (isset($data['payable']) && is_array($data['payable'])) {
             if (array_key_exists('brand', $data['payable']) && array_key_exists('last_four_digits', $data['payable'])) {
                 $payable = CreditCardPayableResponse::fromArray($data['payable']);
@@ -241,7 +242,6 @@ final class PaymentResponse
         }
 
         $refund = null;
-
         if (isset($data['refund']) && is_array($data['refund'])) {
             $refund = RefundResponse::fromArray($data['refund']);
         }
