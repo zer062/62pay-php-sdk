@@ -11,7 +11,7 @@ final class PaymentResponse
      * @param int $amount
      * @param int|null $receivableAmount
      * @param int|null $fees
-     * @param int|null $rates
+     * @param float|null $rates
      * @param int|null $interestPercent
      * @param string|null $fineType
      * @param int|null $fineValue
@@ -34,7 +34,7 @@ final class PaymentResponse
         private int                                                                       $amount,
         private ?int                                                                      $receivableAmount,
         private ?int                                                                      $fees,
-        private ?int                                                                      $rates,
+        private ?float                                                                    $rates,
         private ?int                                                                      $interestPercent,
         private ?string                                                                   $fineType,
         private ?int                                                                      $fineValue,
@@ -95,9 +95,9 @@ final class PaymentResponse
     }
 
     /**
-     * @return int|null
+     * @return float|null
      */
-    public function rates(): ?int
+    public function rates(): ?float
     {
         return $this->rates;
     }
@@ -251,8 +251,8 @@ final class PaymentResponse
             status: $data['status'],
             amount: $data['amount'],
             receivableAmount: $data['receivable_amount'] ?? null,
-            fees: $data['fees'] ?? null,
-            rates: $data['rates'] ?? null,
+            fees: (int)$data['fees'] ?? null,
+            rates: (float)$data['rates'] ?? null,
             interestPercent: $data['interest_percent'] ?? null,
             fineType: $data['fine_type'] ?? null,
             fineValue: $data['fine_value'] ?? null,
