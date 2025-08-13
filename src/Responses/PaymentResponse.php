@@ -9,6 +9,7 @@ final class PaymentResponse
      * @param string $id
      * @param string $status
      * @param int $amount
+     * @param int $originalAmount
      * @param int|null $receivableAmount
      * @param int|null $fees
      * @param float|null $rates
@@ -32,6 +33,7 @@ final class PaymentResponse
         private string                                                                    $id,
         private string                                                                    $status,
         private int                                                                       $amount,
+        private int                                                                       $originalAmount,
         private ?int                                                                      $receivableAmount,
         private ?int                                                                      $fees,
         private ?float                                                                    $rates,
@@ -76,6 +78,14 @@ final class PaymentResponse
     public function amount(): int
     {
         return $this->amount;
+    }
+
+    /**
+     * @return int
+     */
+    public function originalAmount(): int
+    {
+        return $this->originalAmount;
     }
 
     /**
@@ -250,6 +260,7 @@ final class PaymentResponse
             id: $data['id'],
             status: $data['status'],
             amount: $data['amount'],
+            originalAmount: $data['original_amount'],
             receivableAmount: $data['receivable_amount'] ?? null,
             fees: (int)$data['fees'] ?? null,
             rates: (float)$data['rates'] ?? null,

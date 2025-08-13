@@ -10,6 +10,7 @@ final class InvoiceResponse
      * @param string $status
      * @param string|null $paymentMethod
      * @param int $amount
+     * @param int $originalAmount
      * @param int|null $receivableAmount
      * @param int|null $totalRates
      * @param int|null $installments
@@ -20,13 +21,14 @@ final class InvoiceResponse
      * @param bool|null $immutable
      * @param string $checkoutUrl
      * @param PaymentResponse[] $payments
-     * * @param TagResponse[]|null $tags
+     * @param TagResponse[]|null $tags
      */
     private function __construct(
         private string  $id,
         private string  $status,
         private ?string $paymentMethod,
         private int     $amount,
+        private int     $originalAmount,
         private ?int    $receivableAmount,
         private ?int    $totalRates,
         private ?int    $installments,
@@ -72,6 +74,14 @@ final class InvoiceResponse
     public function amount(): int
     {
         return $this->amount;
+    }
+
+    /**
+     * @return int
+     */
+    public function originalAmount(): int
+    {
+        return $this->originalAmount;
     }
 
     /**
@@ -192,6 +202,7 @@ final class InvoiceResponse
             status: $data['status'],
             paymentMethod: $data['payment_method'] ?? null,
             amount: $data['amount'],
+            originalAmount: $data['original_amount'],
             receivableAmount: $data['receivable_amount'] ?? null,
             totalRates: $data['total_rates'] ?? null,
             installments: $data['installments'] ?? null,
