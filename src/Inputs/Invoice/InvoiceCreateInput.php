@@ -19,6 +19,7 @@ final class InvoiceCreateInput
      * @param string|null $discountType
      * @param int|null $discountValue
      * @param string|null $discountDeadline
+     * @param bool|null $allowImmediatePixCreation
      * @param array|null $tags
      */
     public function __construct(
@@ -35,6 +36,7 @@ final class InvoiceCreateInput
         private ?string $discountType = null,
         private ?int    $discountValue = null,
         private ?string $discountDeadline = null,
+        private ?bool   $allowImmediatePixCreation = false,
         private ?array  $tags = null
     )
     {
@@ -60,6 +62,7 @@ final class InvoiceCreateInput
             discountType: $data['discount_type'] ?? null,
             discountValue: $data['discount_value'] ?? null,
             discountDeadline: $data['discount_deadline'] ?? null,
+            allowImmediatePixCreation: (bool)$data['allow_immediate_pix_creation'] ?? false,
             tags: isset($data['tags']) && is_array($data['tags']) ? array_values($data['tags']) : null,
         );
     }
@@ -83,6 +86,7 @@ final class InvoiceCreateInput
             'discount_type' => $this->discountType,
             'discount_value' => $this->discountValue,
             'discount_deadline' => $this->discountDeadline,
+            'allow_immediate_pix_creation' => $this->allowImmediatePixCreation,
             'tags' => $this->tags,
         ];
         return array_filter($payload, static fn($v) => $v !== null);
