@@ -8,23 +8,20 @@ use GuzzleHttp\Exception\GuzzleException;
 use Sixtytwopay\Client;
 use Sixtytwopay\Exceptions\ApiException;
 use Sixtytwopay\Inputs\Invoice\InvoiceCreateInput;
+use Sixtytwopay\Inputs\Invoice\InvoiceCreditCardInput;
 use Sixtytwopay\Inputs\Invoice\InvoiceUpdateInput;
+use Sixtytwopay\Responses\InvoiceCreditCardPaymentResponse;
 use Sixtytwopay\Responses\InvoiceResponse;
 
 final class InvoiceService
 {
     private const INVOICES_ENDPOINT = 'invoices';
 
-    /**
-     * @param Client $client
-     */
     public function __construct(private Client $client)
     {
     }
 
     /**
-     * @param InvoiceCreateInput $input
-     * @return InvoiceResponse
      * @throws ApiException
      * @throws GuzzleException
      */
@@ -38,9 +35,6 @@ final class InvoiceService
     }
 
     /**
-     * @param string $invoice
-     * @param InvoiceUpdateInput $input
-     * @return InvoiceResponse
      * @throws ApiException
      * @throws GuzzleException
      */
@@ -54,8 +48,6 @@ final class InvoiceService
     }
 
     /**
-     * @param string $invoice
-     * @return void
      * @throws ApiException
      * @throws GuzzleException
      */
@@ -65,8 +57,6 @@ final class InvoiceService
     }
 
     /**
-     * @param string $invoice
-     * @return InvoiceResponse
      * @throws ApiException
      * @throws GuzzleException
      */
@@ -78,8 +68,6 @@ final class InvoiceService
     }
 
     /**
-     * @param array $filters
-     * @return array
      * @throws ApiException
      * @throws GuzzleException
      */
@@ -91,13 +79,41 @@ final class InvoiceService
     }
 
     /**
-     * @param string $invoice
-     * @return void
      * @throws ApiException
      * @throws GuzzleException
      */
     public function refund(string $invoice): void
     {
         $this->client->request('POST', sprintf('%s/%s/refund', self::INVOICES_ENDPOINT, $invoice));
+    }
+
+    /**
+     * Paga uma cobrança com cartão de crédito via API.
+     *
+     * Endpoint:
+     * POST /api/v1/invoices/{publicId}/pay/credit-card
+     *
+     * Este método retorna InvoiceCreditCardPaymentResponse tanto em sucesso quanto em erro conhecido da API.
+     *
+     * @throws GuzzleException
+     */
+    public function payWithCreditCard(
+        string                 $invoice,
+        InvoiceCreditCardInput $input,
+    ): InvoiceCreditCardPaymentResponse
+    {
+        try {
+            $raw = $this->client->request(
+                'POST',
+                sprintf('%s/%s/pay/credit-card', self::INVOICES_ENDPOINT, $invoice),
+                [
+                    'json' => $input->toPayload(),
+                ],
+            );
+
+            return InvoiceCreditCardPaymentResponse::fromArray($raw);
+        } catch (ApiException $exception) {
+            return InvoiceCreditCardPaymentResponse::fromApiException($exception);
+        }
     }
 }
