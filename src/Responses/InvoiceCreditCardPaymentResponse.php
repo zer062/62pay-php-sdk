@@ -60,15 +60,30 @@ final class InvoiceCreditCardPaymentResponse
         return $this->raw;
     }
 
+    public function fieldErrors(): array
+    {
+        return $this->raw['errors'][0]['meta']['fields'] ?? [];
+    }
+
+    public function fieldError(string $field): array
+    {
+        $errors = $this->fieldErrors();
+
+        return isset($errors[$field]) && is_array($errors[$field])
+            ? $errors[$field]
+            : [];
+    }
+
     public static function fromArray(array $response): self
     {
-        $success = (bool)($response['success'] ?? true);
+        $success = !isset($response['errors'])
+            && (bool)($response['success'] ?? true);
 
         if (!$success) {
             return new self(
                 success: false,
                 message: self::extractMessage($response),
-                code: isset($response['code']) && $response['code'] !== null ? (string)$response['code'] : null,
+                code: self::extractCode($response),
                 statusCode: isset($response['status_code']) ? (int)$response['status_code'] : null,
                 raw: $response,
             );
@@ -104,7 +119,7 @@ final class InvoiceCreditCardPaymentResponse
             return new self(
                 success: false,
                 message: self::extractMessage($payload) ?? $exception->getMessage(),
-                code: self::extractCode($payload),
+                code: self::extractCode($payload) ?? self::extractCodeFromException($exception),
                 statusCode: self::extractStatusCodeFromException($exception),
                 raw: $payload,
             );
@@ -139,7 +154,7 @@ final class InvoiceCreditCardPaymentResponse
         return new self(
             success: false,
             message: $exception->getMessage(),
-            code: null,
+            code: self::extractCodeFromException($exception),
             statusCode: self::extractStatusCodeFromException($exception),
             raw: [],
         );
@@ -185,6 +200,16 @@ final class InvoiceCreditCardPaymentResponse
             }
         }
 
+        $previous = $exception->getPrevious();
+
+        if ($previous instanceof ApiException) {
+            $payload = self::extractPayloadFromException($previous);
+
+            if ($payload !== []) {
+                return $payload;
+            }
+        }
+
         $message = trim($exception->getMessage());
 
         if ($message === '') {
@@ -198,11 +223,33 @@ final class InvoiceCreditCardPaymentResponse
 
     private static function extractMessage(array $payload): ?string
     {
-        return $payload['message']
+        $message = $payload['message']
             ?? $payload['error']['message']
             ?? $payload['errors'][0]['description']
             ?? $payload[0]['description']
             ?? null;
+
+        if ($message !== null) {
+            return (string)$message;
+        }
+
+        $fields = $payload['errors'][0]['meta']['fields'] ?? null;
+
+        if (!is_array($fields)) {
+            return null;
+        }
+
+        foreach ($fields as $messages) {
+            if (is_array($messages) && isset($messages[0])) {
+                return (string)$messages[0];
+            }
+
+            if (is_string($messages)) {
+                return $messages;
+            }
+        }
+
+        return null;
     }
 
     private static function extractCode(array $payload): ?string
@@ -216,16 +263,41 @@ final class InvoiceCreditCardPaymentResponse
         return $code !== null ? (string)$code : null;
     }
 
+    private static function extractCodeFromException(ApiException $exception): ?string
+    {
+        if (method_exists($exception, 'getApiErrorCode')) {
+            $code = $exception->getApiErrorCode();
+
+            if ($code !== null) {
+                return $code;
+            }
+        }
+
+        $previous = $exception->getPrevious();
+
+        if ($previous instanceof ApiException) {
+            return self::extractCodeFromException($previous);
+        }
+
+        return null;
+    }
+
     private static function extractStatusCodeFromException(ApiException $exception): ?int
     {
         if (method_exists($exception, 'statusCode')) {
             $statusCode = $exception->statusCode();
 
-            return is_numeric($statusCode) ? (int)$statusCode : null;
+            if (is_numeric($statusCode)) {
+                return (int)$statusCode;
+            }
         }
 
-        $code = $exception->getCode();
+        $previous = $exception->getPrevious();
 
-        return $code > 0 ? (int)$code : null;
+        if ($previous instanceof ApiException) {
+            return self::extractStatusCodeFromException($previous);
+        }
+
+        return null;
     }
 }

@@ -87,16 +87,6 @@ final class InvoiceService
         $this->client->request('POST', sprintf('%s/%s/refund', self::INVOICES_ENDPOINT, $invoice));
     }
 
-    /**
-     * Paga uma cobrança com cartão de crédito via API.
-     *
-     * Endpoint:
-     * POST /api/v1/invoices/{publicId}/pay/credit-card
-     *
-     * Este método retorna InvoiceCreditCardPaymentResponse tanto em sucesso quanto em erro conhecido da API.
-     *
-     * @throws GuzzleException
-     */
     public function payWithCreditCard(
         string                 $invoice,
         InvoiceCreditCardInput $input,
