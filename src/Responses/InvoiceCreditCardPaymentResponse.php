@@ -67,8 +67,8 @@ final class InvoiceCreditCardPaymentResponse
         if (!$success) {
             return new self(
                 success: false,
-                message: isset($response['message']) ? (string)$response['message'] : null,
-                code: isset($response['code']) ? (string)$response['code'] : null,
+                message: self::extractMessage($response),
+                code: isset($response['code']) && $response['code'] !== null ? (string)$response['code'] : null,
                 statusCode: isset($response['status_code']) ? (int)$response['status_code'] : null,
                 raw: $response,
             );
@@ -77,11 +77,13 @@ final class InvoiceCreditCardPaymentResponse
         $data = $response['data'] ?? $response;
 
         $invoice = null;
+
         if (isset($data['invoice']) && is_array($data['invoice'])) {
             $invoice = InvoiceResponse::fromArray($data['invoice']);
         }
 
         $payment = null;
+
         if (isset($data['payment']) && is_array($data['payment'])) {
             $payment = CreditCardPaymentResponse::fromArray($data['payment']);
         }
@@ -101,8 +103,34 @@ final class InvoiceCreditCardPaymentResponse
         if ($payload !== []) {
             return new self(
                 success: false,
-                message: isset($payload['message']) ? (string)$payload['message'] : $exception->getMessage(),
-                code: isset($payload['code']) ? (string)$payload['code'] : null,
+                message: self::extractMessage($payload) ?? $exception->getMessage(),
+                code: self::extractCode($payload),
+                statusCode: self::extractStatusCodeFromException($exception),
+                raw: $payload,
+            );
+        }
+
+        $fieldErrors = method_exists($exception, 'getFieldErrors')
+            ? $exception->getFieldErrors()
+            : [];
+
+        if (!empty($fieldErrors)) {
+            $payload = [
+                'errors' => [
+                    [
+                        'code' => 'validation_error',
+                        'description' => $exception->getMessage(),
+                        'meta' => [
+                            'fields' => $fieldErrors,
+                        ],
+                    ],
+                ],
+            ];
+
+            return new self(
+                success: false,
+                message: $exception->getMessage(),
+                code: 'validation_error',
                 statusCode: self::extractStatusCodeFromException($exception),
                 raw: $payload,
             );
@@ -119,10 +147,18 @@ final class InvoiceCreditCardPaymentResponse
 
     private static function extractPayloadFromException(ApiException $exception): array
     {
+        if (method_exists($exception, 'getRawPayload')) {
+            $payload = $exception->getRawPayload();
+
+            if (is_array($payload) && !empty($payload)) {
+                return $payload;
+            }
+        }
+
         if (method_exists($exception, 'response')) {
             $response = $exception->response();
 
-            if (is_array($response)) {
+            if (is_array($response) && !empty($response)) {
                 return $response;
             }
         }
@@ -130,7 +166,7 @@ final class InvoiceCreditCardPaymentResponse
         if (method_exists($exception, 'payload')) {
             $payload = $exception->payload();
 
-            if (is_array($payload)) {
+            if (is_array($payload) && !empty($payload)) {
                 return $payload;
             }
         }
@@ -138,8 +174,14 @@ final class InvoiceCreditCardPaymentResponse
         if (method_exists($exception, 'errors')) {
             $errors = $exception->errors();
 
-            if (is_array($errors)) {
-                return $errors;
+            if (is_array($errors) && !empty($errors)) {
+                if (isset($errors['errors'])) {
+                    return $errors;
+                }
+
+                return [
+                    'errors' => $errors,
+                ];
             }
         }
 
@@ -152,6 +194,26 @@ final class InvoiceCreditCardPaymentResponse
         $decoded = json_decode($message, true);
 
         return is_array($decoded) ? $decoded : [];
+    }
+
+    private static function extractMessage(array $payload): ?string
+    {
+        return $payload['message']
+            ?? $payload['error']['message']
+            ?? $payload['errors'][0]['description']
+            ?? $payload[0]['description']
+            ?? null;
+    }
+
+    private static function extractCode(array $payload): ?string
+    {
+        $code = $payload['code']
+            ?? $payload['error']['code']
+            ?? $payload['errors'][0]['code']
+            ?? $payload[0]['code']
+            ?? null;
+
+        return $code !== null ? (string)$code : null;
     }
 
     private static function extractStatusCodeFromException(ApiException $exception): ?int
