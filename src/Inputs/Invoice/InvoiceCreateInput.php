@@ -40,7 +40,8 @@ final class InvoiceCreateInput
         private ?array  $tags = null,
         private ?string $category = null,
         private ?string $courseName = null,
-        private ?string $courseExternalId = null
+        private ?string $courseExternalId = null,
+        private ?string $externalReference = null
     )
     {
     }
@@ -70,6 +71,7 @@ final class InvoiceCreateInput
             category: $data['category'] ?? null,
             courseName: $data['course_name'] ?? null,
             courseExternalId: $data['course_external_id'] ?? null,
+            externalReference: $data['external_reference'] ?? null,
         );
     }
 
@@ -97,6 +99,7 @@ final class InvoiceCreateInput
             'category' => $this->category,
             'course_name' => $this->courseName,
             'course_external_id' => $this->courseExternalId,
+            'external_reference' => $this->externalReference,
         ];
         return array_filter($payload, static fn($v) => $v !== null);
     }
