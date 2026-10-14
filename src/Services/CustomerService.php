@@ -127,7 +127,7 @@ final class CustomerService
      */
     private function sanitizeCustomerListFilters(array $filters): array
     {
-        $allowed = ['name', 'email', 'document_number', 'with_trashed', 'page', 'per_page'];
+        $allowed = ['name', 'email', 'document_number', 'phone', 'with_trashed', 'page', 'per_page'];
 
         $clean = array_intersect_key($filters, array_flip($allowed));
 

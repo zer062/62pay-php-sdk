@@ -21,6 +21,8 @@ final class InvoiceCreateInput
      * @param string|null $discountDeadline
      * @param bool|null $allowImmediatePixCreation
      * @param array|null $tags
+     * @param array|null $attribution
+     * @param string|null $enrollmentIntentId
      */
     public function __construct(
         private string  $customer,
@@ -41,7 +43,9 @@ final class InvoiceCreateInput
         private ?string $category = null,
         private ?string $courseName = null,
         private ?string $courseExternalId = null,
-        private ?string $externalReference = null
+        private ?string $externalReference = null,
+        private ?array  $attribution = null,
+        private ?string $enrollmentIntentId = null
     )
     {
     }
@@ -59,19 +63,21 @@ final class InvoiceCreateInput
             dueDate: (string)$data['due_date'],
             description: $data['description'] ?? null,
             installments: $data['installments'] ?? 1,
-            immutable: (bool)$data['immutable'] ?? false,
+            immutable: (bool) ($data['immutable'] ?? false),
             interestPercent: $data['interest_percent'] ?? null,
             fineType: $data['fine_type'] ?? null,
             fineValue: $data['fine_value'] ?? null,
             discountType: $data['discount_type'] ?? null,
             discountValue: $data['discount_value'] ?? null,
             discountDeadline: $data['discount_deadline'] ?? null,
-            allowImmediatePixCreation: (bool)$data['allow_immediate_pix_creation'] ?? false,
+            allowImmediatePixCreation: (bool) ($data['allow_immediate_pix_creation'] ?? false),
             tags: isset($data['tags']) && is_array($data['tags']) ? array_values($data['tags']) : null,
             category: $data['category'] ?? null,
             courseName: $data['course_name'] ?? null,
             courseExternalId: $data['course_external_id'] ?? null,
             externalReference: $data['external_reference'] ?? null,
+            attribution: isset($data['attribution']) && is_array($data['attribution']) ? $data['attribution'] : null,
+            enrollmentIntentId: $data['enrollment_intent_id'] ?? null,
         );
     }
 
@@ -100,6 +106,8 @@ final class InvoiceCreateInput
             'course_name' => $this->courseName,
             'course_external_id' => $this->courseExternalId,
             'external_reference' => $this->externalReference,
+            'attribution' => $this->attribution,
+            'enrollment_intent_id' => $this->enrollmentIntentId,
         ];
         return array_filter($payload, static fn($v) => $v !== null);
     }
