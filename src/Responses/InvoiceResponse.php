@@ -22,6 +22,9 @@ final class InvoiceResponse
      * @param string $checkoutUrl
      * @param PaymentResponse[] $payments
      * @param TagResponse[]|null $tags
+     * @param string|null $category
+     * @param string|null $courseName
+     * @param string|null $courseExternalId
      */
     private function __construct(
         private string  $id,
@@ -40,6 +43,9 @@ final class InvoiceResponse
         private string  $checkoutUrl,
         private array   $payments,
         private ?array  $tags,
+        private ?string $category,
+        private ?string $courseName,
+        private ?string $courseExternalId,
     )
     {
     }
@@ -173,6 +179,30 @@ final class InvoiceResponse
     }
 
     /**
+     * @return string|null
+     */
+    public function category(): ?string
+    {
+        return $this->category;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function courseName(): ?string
+    {
+        return $this->courseName;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function courseExternalId(): ?string
+    {
+        return $this->courseExternalId;
+    }
+
+    /**
      * @param array $response
      * @return self
      */
@@ -214,6 +244,9 @@ final class InvoiceResponse
             checkoutUrl: $data['checkout_url'],
             payments: $payments,
             tags: $tags,
+            category: $data['category'] ?? null,
+            courseName: $data['course_name'] ?? null,
+            courseExternalId: $data['course_external_id'] ?? null,
         );
     }
 }

@@ -37,7 +37,10 @@ final class InvoiceCreateInput
         private ?int    $discountValue = null,
         private ?string $discountDeadline = null,
         private ?bool   $allowImmediatePixCreation = false,
-        private ?array  $tags = null
+        private ?array  $tags = null,
+        private ?string $category = null,
+        private ?string $courseName = null,
+        private ?string $courseExternalId = null
     )
     {
     }
@@ -64,6 +67,9 @@ final class InvoiceCreateInput
             discountDeadline: $data['discount_deadline'] ?? null,
             allowImmediatePixCreation: (bool)$data['allow_immediate_pix_creation'] ?? false,
             tags: isset($data['tags']) && is_array($data['tags']) ? array_values($data['tags']) : null,
+            category: $data['category'] ?? null,
+            courseName: $data['course_name'] ?? null,
+            courseExternalId: $data['course_external_id'] ?? null,
         );
     }
 
@@ -88,6 +94,9 @@ final class InvoiceCreateInput
             'discount_deadline' => $this->discountDeadline,
             'allow_immediate_pix_creation' => $this->allowImmediatePixCreation,
             'tags' => $this->tags,
+            'category' => $this->category,
+            'course_name' => $this->courseName,
+            'course_external_id' => $this->courseExternalId,
         ];
         return array_filter($payload, static fn($v) => $v !== null);
     }
