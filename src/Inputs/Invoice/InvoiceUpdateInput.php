@@ -23,6 +23,7 @@ final class InvoiceUpdateInput
             'payment_method', 'amount', 'due_date', 'description',
             'installments', 'immutable', 'tags',
             'category', 'course_name', 'course_external_id',
+            'external_reference',
         ];
 
         $payload = array_intersect_key($d, array_flip($allowed));

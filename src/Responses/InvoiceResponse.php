@@ -25,6 +25,7 @@ final class InvoiceResponse
      * @param string|null $category
      * @param string|null $courseName
      * @param string|null $courseExternalId
+     * @param string|null $externalReference
      */
     private function __construct(
         private string  $id,
@@ -46,6 +47,7 @@ final class InvoiceResponse
         private ?string $category,
         private ?string $courseName,
         private ?string $courseExternalId,
+        private ?string $externalReference,
     )
     {
     }
@@ -203,6 +205,14 @@ final class InvoiceResponse
     }
 
     /**
+     * @return string|null
+     */
+    public function externalReference(): ?string
+    {
+        return $this->externalReference;
+    }
+
+    /**
      * @param array $response
      * @return self
      */
@@ -247,6 +257,7 @@ final class InvoiceResponse
             category: $data['category'] ?? null,
             courseName: $data['course_name'] ?? null,
             courseExternalId: $data['course_external_id'] ?? null,
+            externalReference: $data['external_reference'] ?? null,
         );
     }
 }
