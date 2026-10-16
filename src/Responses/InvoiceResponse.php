@@ -26,6 +26,7 @@ final class InvoiceResponse
      * @param string|null $courseName
      * @param string|null $courseExternalId
      * @param string|null $externalReference
+     * @param array|null $attribution
      */
     private function __construct(
         private string  $id,
@@ -48,6 +49,7 @@ final class InvoiceResponse
         private ?string $courseName,
         private ?string $courseExternalId,
         private ?string $externalReference,
+        private ?array  $attribution = null,
     )
     {
     }
@@ -213,6 +215,14 @@ final class InvoiceResponse
     }
 
     /**
+     * @return array|null
+     */
+    public function attribution(): ?array
+    {
+        return $this->attribution;
+    }
+
+    /**
      * @param array $response
      * @return self
      */
@@ -258,6 +268,7 @@ final class InvoiceResponse
             courseName: $data['course_name'] ?? null,
             courseExternalId: $data['course_external_id'] ?? null,
             externalReference: $data['external_reference'] ?? null,
+            attribution: isset($data['attribution']) && is_array($data['attribution']) ? $data['attribution'] : null,
         );
     }
 }
