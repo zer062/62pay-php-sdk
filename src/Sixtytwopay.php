@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Sixtytwopay;
 
 use InvalidArgumentException;
+use Sixtytwopay\Services\CheckoutSessionService;
 use Sixtytwopay\Services\CustomerService;
 use Sixtytwopay\Services\EnrollmentIntentService;
 use Sixtytwopay\Services\InvoiceService;
@@ -39,6 +40,11 @@ final class Sixtytwopay
     public function invoice(): InvoiceService
     {
         return new InvoiceService($this->client);
+    }
+
+    public function checkoutSession(): CheckoutSessionService
+    {
+        return new CheckoutSessionService($this->client);
     }
 
     public function enrollmentIntent(): EnrollmentIntentService
