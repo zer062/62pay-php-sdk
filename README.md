@@ -38,9 +38,8 @@ $sdk = new Sixtytwopay('SIXTYTWOPAY_API_KEY', 'SANDBOX');
 | Método no SDK      | Serviço         | Descrição                                         |
 |--------------------|-----------------|---------------------------------------------------|
 | `$sdk->customer()` | CustomerService | Criação, listagem e atualização de clientes       |
-| `$sdk->invoice()`  | InvoiceService  | Emissão e gerenciamento de cobranças              |
+| `$sdk->invoice()`  | InvoiceService  | Emissão, gestão e pagamento com cartão de crédito |
 | `$sdk->payment()`  | PaymentService  | Processamento e consulta de pagamentos            |
-| `$sdk->checkout()` | CheckoutService | Pagamento direto via checkout (Cartão de crédito) |
 
 ## 🌟 **Funcionalidades**
 
@@ -225,29 +224,17 @@ $sdk->payment()->refund('01987533-8e9e-7384-a2e3-96fb04d556f2', [
 > - O `update()` aplica apenas os campos aceitos em `buildUpdatePayload()`; envie somente o que deseja alterar.
 > - **Valide** se a chave correta é `interest_percenter` ou `interest_percent` conforme sua API.
 
-### **Checkout**
+### **Pagamento com cartão de crédito**
 
-#### Pagar fatura com **cartão de crédito** (mínimo)
-
-```php
-$response = $sdk->checkout()->payWithCreditCard('01987533-8e9e-7384-a2e3-96fb04d556f2', [
-'holder_name' => 'João da Silva',
-'number' => '4111111111111111',
-'card_expiry_date' => '12/28',
-'ccv' => '123',
-'billing_name' => 'João da Silva',
-'billing_email' => 'joao@example.com',
-'billing_document_number' => '12345678900',
-'billing_postal_code' => '01311000',
-'billing_address_number' => '123',
-'billing_phone' => '11988887777',
-]);
-```
-
-#### Com parcelas e endereço completo
+`client_ip` é obrigatório. Envie o IP do comprador observado pelo seu servidor na requisição original do navegador
+(IPv4 ou IPv6). Nunca envie o IP do próprio servidor nem o primeiro valor arbitrário de `X-Forwarded-For`.
+Se `client_ip` estiver ausente ou malformado, o SDK lança `InvalidArgumentException` antes de chamar a API.
+A 62Pay gera a sessão ClearSale no servidor: não envie app key, SessionID nem dados do SDK ClearSale.
 
 ```php
-$response = $sdk->checkout()->payWithCreditCard('01987533-8e9e-7384-a2e3-96fb04d556f2', [
+use Sixtytwopay\Inputs\Invoice\InvoiceCreditCardInput;
+
+$input = InvoiceCreditCardInput::fromArray([
 'holder_name' => 'Maria Oliveira',
 'number' => '5555444433331111',
 'card_expiry_date' => '07/29',
@@ -257,11 +244,24 @@ $response = $sdk->checkout()->payWithCreditCard('01987533-8e9e-7384-a2e3-96fb04d
 'billing_email' => 'maria@example.com',
 'billing_document_number' => '98765432100',
 'billing_postal_code' => '20031000',
+'billing_street' => 'Rua Exemplo',
 'billing_address_number' => '456',
 'billing_address_complement' => 'Apto 1203',
+'billing_neighborhood' => 'Centro',
+'billing_city' => 'Rio de Janeiro',
+'billing_state' => 'RJ',
 'billing_phone' => '21977776666',
+'client_ip' => '203.0.113.10',
 ]);
+
+$response = $sdk->invoice()->payWithCreditCard('01987533-8e9e-7384-a2e3-96fb04d556f2', $input);
+
+if ($response->failed()) {
+    $fields = $response->raw()['errors'][0]['meta']['fields'] ?? [];
+}
 ```
+
+> ℹ️ `203.0.113.10` é um IP reservado para documentação. Use o IP real do comprador.
 
 ## ⚡ Boas Práticas
 

@@ -4,8 +4,15 @@ declare(strict_types=1);
 
 namespace Sixtytwopay\Inputs\Invoice;
 
+use InvalidArgumentException;
+
 final class InvoiceCreditCardInput
 {
+    private string $clientIp;
+
+    /**
+     * @throws InvalidArgumentException
+     */
     public function __construct(
         private string $holderName,
         private string $number,
@@ -22,11 +29,16 @@ final class InvoiceCreditCardInput
         private string $billingCity,
         private string $billingState,
         private string $billingPhone,
+        string $clientIp,
         private ?int   $installments = null,
     )
     {
+        $this->clientIp = self::validatedClientIp($clientIp);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public static function fromArray(array $data): self
     {
         return new self(
@@ -45,8 +57,14 @@ final class InvoiceCreditCardInput
             billingCity: (string)$data['billing_city'],
             billingState: (string)$data['billing_state'],
             billingPhone: (string)$data['billing_phone'],
+            clientIp: (string)($data['client_ip'] ?? ''),
             installments: isset($data['installments']) ? (int)$data['installments'] : null,
         );
+    }
+
+    public function clientIp(): string
+    {
+        return $this->clientIp;
     }
 
     public function toPayload(): array
@@ -68,8 +86,29 @@ final class InvoiceCreditCardInput
             'billing_city' => $this->billingCity,
             'billing_state' => strtoupper($this->billingState),
             'billing_phone' => $this->billingPhone,
+            'client_ip' => $this->clientIp,
         ];
 
         return array_filter($payload, static fn($value): bool => $value !== null);
+    }
+
+    /**
+     * @throws InvalidArgumentException
+     */
+    private static function validatedClientIp(string $clientIp): string
+    {
+        if ($clientIp === '') {
+            throw new InvalidArgumentException(
+                'client_ip is required: send the buyer IP captured from the original browser request.'
+            );
+        }
+
+        if (filter_var($clientIp, FILTER_VALIDATE_IP) === false) {
+            throw new InvalidArgumentException(
+                sprintf('client_ip must be a valid IPv4 or IPv6 address, "%s" given.', $clientIp)
+            );
+        }
+
+        return $clientIp;
     }
 }
